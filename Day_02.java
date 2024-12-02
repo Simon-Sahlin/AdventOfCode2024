@@ -66,45 +66,56 @@ public class Day_02 {
         int output = 0;
 
         for (int[] nums : numbers){
-            System.out.println(Arrays.toString(nums));
-            int dif = nums[1] - nums[0];
-            if (dif == 0)
-                continue;
-            int op = dif / Math.abs(dif);
-            int valid = 0;
-            for (int i = 1; i < nums.length; i++) {
-                dif = nums[i] - nums[i-1];
-                //System.out.println("here3 " + dif + " : i-" + i);
-                if (!(dif * op > 0 && Math.abs(dif) <= 3)){
-                    if (i+1 > nums.length-1){
-                        valid++;
-                        //System.out.println("here1");
-                        continue;
-                    }
-                    dif = nums[i+1] - nums[i-1];
-                    //System.out.println("here4 " + dif);
-                    if (!(dif * op > 0 && Math.abs(dif) <= 3)){
-                        valid += 100;
-                    }else {
-                        i++;
-                        //System.out.println("here2");
-                        valid++;
-                    }
-                }
-            }
-            if (valid <= 1){
+            boolean valid = validNums(nums, 0);
+            if (valid)
                 output++;
-                System.out.println("Valid : " + valid);
-            }
-            else{
-                System.out.println("INValid : " + valid);
-
-            }
-
         }
 
 
-        System.out.println(Arrays.deepToString(numbers));
         System.out.println(output);
+    }
+
+    boolean validNums(int[] nums, int depth){
+
+        int opDif = nums[1] - nums[0];
+        int op = 0;
+        if (opDif != 0)
+            op = opDif / Math.abs(opDif);
+
+        for (int i = 1; i < nums.length; i++) {
+            int dif = nums[i] - nums[i-1];
+            if (!(dif * op > 0 && Math.abs(dif) <= 3)){
+                if (depth > 0)
+                    return false;
+                else{
+                    boolean valid = false;
+                    for (int j = 0; j < nums.length; j++) {
+                        valid = validNums(removeElement(nums, j), 1);
+                        if (valid){
+                            return true;
+                        }
+                    }
+                    return valid;
+                }
+            }
+            opDif = nums[1] - nums[0];
+            op = 0;
+            if (opDif != 0)
+                op = opDif / Math.abs(opDif);
+        }
+
+        return true;
+    }
+
+
+    int[] removeElement(int[] nums, int remove){
+        int[] newNums = new int[nums.length - 1];
+        for (int i = 0, k = 0; i < nums.length; i++) {
+            if (i != remove){
+                newNums[k] = nums[i];
+                k++;
+            }
+        }
+        return newNums;
     }
 }
